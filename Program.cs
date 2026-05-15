@@ -35,13 +35,13 @@ namespace deque_lab
                 {
                     return new TreeNode(data);
                 }
-                else if (root.Data < data)
+                else if (data < root.Data) //если данные меньше, чем данные текущего узла, добавляем в левую ветку
                 {
-                    root.Left = AddRecursive(root, data); //если данные меньше, чем данные текущего узла, добавляем в левую ветку
+                    root.Left = AddRecursive(root, data); 
                 }
-                else
+                else //если данные больше (или равны), чем у текущего узла, добавляем в правую ветку 
                 {
-                    root.Right = AddRecursive(root, data); //если данные больше, чем у текущего узла, добавляем в правую ветку 
+                    root.Right = AddRecursive(root, data); 
                 }
                 return root;
             }
@@ -84,6 +84,72 @@ namespace deque_lab
                 
             }
             public TreeNode Clear(TreeNode root) {return null;}
+
+            public string PrintLKP()
+            {
+                if (Root == null) return "Дерево пустое";
+                
+                string result = PrintLKPRecursive(Root);
+                return result;
+            }
+            private string PrintLKPRecursive(TreeNode current)
+{
+                if (current == null) return "";
+
+                string ldata = PrintLKPRecursive(current.Left);
+
+                string curdata = current.Data + " ";
+
+                string rdata = PrintLKPRecursive(current.Right);
+
+                return ldata + curdata + rdata;
+            }
+            public void PrintPretty()
+            {
+                if (Root == null)
+                {
+                    Console.WriteLine("Дерево пустое");
+                    return;
+                }
+                PrintPrettyRecursive(Root, "", " ");
+            }
+
+            private void PrintPrettyRecursive(TreeNode root, string indent, string link)
+            {
+                if (root == null) return;
+
+                PrintPrettyRecursive(root.Right, indent + (link == " /" ? "    " : "    "), " /");
+                Console.WriteLine(indent + link + root.Data);
+                PrintPrettyRecursive(root.Left, indent + (link == " \\" ? "    " : "    "), " \\");
+            }
+            public void LevelOrder()
+            {
+                if (Root == null) return;
+
+                //очередь, в которую будем складывать узлы
+                Queue<TreeNode> queue = new Queue<TreeNode>();
+
+                // Кладем в очередь корень дерева
+                queue.Enqueue(Root);
+
+                while (queue.Count > 0)
+                {
+                    // первый узел из очереди
+                    TreeNode node = queue.Dequeue();
+
+                    Console.Write(node.Data + " ");
+
+                    if (node.Left != null)
+                    {
+                        queue.Enqueue(node.Left);
+                    }
+
+                    if (node.Right != null)
+                    {
+                        queue.Enqueue(node.Right);
+                    }
+                }
+            }
             // public string PrintLKR(TreeNode root)
             // {
             //     string result_string="";
@@ -102,7 +168,43 @@ namespace deque_lab
             // }
 
         }
+        public static void Zadanie1(TreeNode root)
+        {
+            if (root == null) return;
 
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            int level = 1;
+            while (queue.Count > 0)
+            {
+                int nodesAtLevel = queue.Count; // Количество узлов на текущем "этаже"
+                int maxVal = int.MinValue;    // Временная переменная для максимума
+
+                // Проходим только те узлы, которые относятся к текущему уровню
+                for (int i = 0; i < nodesAtLevel; i++)
+                {
+                    TreeNode node = queue.Dequeue();
+                    
+                    if (node.Data > maxVal) 
+                        maxVal = node.Data;
+
+                    if (node.Left != null) queue.Enqueue(node.Left);
+                    if (node.Right != null) queue.Enqueue(node.Right);
+                }
+
+                Console.WriteLine($"Уровень {level}: Максимум = {maxVal}");
+                level++;
+            }
+        }
+        public static void Zadanie2(TreeNode root)
+        {
+            if (root == null) return;
+            root.Data = root.Data * 2;
+            // удваиваем в поддеревьях
+            Zadanie2(root.Left);
+            Zadanie2(root.Right);
+        }
 
 
 
