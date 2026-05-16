@@ -8,8 +8,8 @@ namespace deque_lab
         public class TreeNode
         {
             public int Data {get; set;}
-            public TreeNode Left {get;set;}
-            public TreeNode Right {get;set;}
+            public TreeNode? Left {get;set;}
+            public TreeNode? Right {get;set;}
 
             public TreeNode(int data)
             {
@@ -22,30 +22,30 @@ namespace deque_lab
         public class BinTreeM
         {
             private int count = 0;
-            public TreeNode Root {get; set;}
+            public TreeNode? Root {get; set;}
 
             public void AddElement(int data)
             {
                 count++;
                 Root = AddRecursive(Root, data);
             }
-            private TreeNode AddRecursive(TreeNode root, int data)
+            private TreeNode AddRecursive(TreeNode? root, int data)
             {
-                if (root == null) //если элемент пустой, возвращаем узел с данными
+                if (root == null) // если элемент пустой, возвращаем узел с данными
                 {
                     return new TreeNode(data);
                 }
-                else if (data < root.Data) //если данные меньше, чем данные текущего узла, добавляем в левую ветку
+                else if (data < root.Data) // если данные меньше, добавляем в левую ветку
                 {
-                    root.Left = AddRecursive(root, data); 
+                    root.Left = AddRecursive(root.Left, data); 
                 }
-                else //если данные больше (или равны), чем у текущего узла, добавляем в правую ветку 
+                else // если данные больше или равны, добавляем в правую ветку 
                 {
-                    root.Right = AddRecursive(root, data); 
+                    root.Right = AddRecursive(root.Right, data); 
                 }
                 return root;
             }
-            public TreeNode Delete(TreeNode root, int data)
+            public TreeNode? Delete(TreeNode? root, int data)
             {
                 if (root == null) return null;
                 
@@ -61,7 +61,7 @@ namespace deque_lab
                         return root.Left;
                     else
                     {
-                        TreeNode newcur = FindMin(root.Right);
+                        TreeNode? newcur = FindMin(root.Right);
                         root.Data = newcur.Data;
                         root.Right = Delete(root.Right, newcur.Data);
                     }
@@ -69,21 +69,20 @@ namespace deque_lab
                     count--;
                     return root;
             }
-            public TreeNode FindMin(TreeNode root)
+            public TreeNode? FindMin(TreeNode? root)
             {
                 if (root == null) return null;
                 if (root.Left == null) return root;
                 return FindMin(root.Left);
                 
             }
-            public TreeNode FindMax(TreeNode root)
+            public TreeNode? FindMax(TreeNode? root)
             {
                 if (root == null) return null;
                 if (root.Right == null) return root;
-                return FindMin(root.Right);
-                
+                return FindMax(root.Right);
             }
-            public TreeNode Clear(TreeNode root) {return null;}
+            public TreeNode? Clear(TreeNode root) {return null;}
 
             public string PrintLKP()
             {
@@ -178,10 +177,9 @@ namespace deque_lab
             int level = 1;
             while (queue.Count > 0)
             {
-                int nodesAtLevel = queue.Count; // Количество узлов на текущем "этаже"
-                int maxVal = int.MinValue;    // Временная переменная для максимума
+                int nodesAtLevel = queue.Count; 
+                int maxVal = int.MinValue;    
 
-                // Проходим только те узлы, которые относятся к текущему уровню
                 for (int i = 0; i < nodesAtLevel; i++)
                 {
                     TreeNode node = queue.Dequeue();
@@ -211,9 +209,87 @@ namespace deque_lab
         static void Main(string[] args)
         {
             BinTreeM bt = new BinTreeM();
-            bt.AddElement(1);
-        }
+
+        ConsoleKeyInfo K;
+            do
+            {
+                Console.WriteLine("1. Добавить элемент");
+                Console.WriteLine("2. Удалить элемент");
+                Console.WriteLine("3. Вывести дерево (Красиво)");
+                Console.WriteLine("4. Вывести дерево (LRK - Post-order)");
+                Console.WriteLine("5. Выполнить Задание 1 (Максимумы по уровням)");
+                Console.WriteLine("6. Выполнить Задание 2 (Удвоить все значения)");
+                Console.WriteLine("Esc. Выход");
+                K = Console.ReadKey();
+
         
 
+
+
+                switch (K.Key)
+                {
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1: 
+                        {
+                            Console.Clear();
+                            Console.Write("Введите число для добавления: ");
+                            if (int.TryParse(Console.ReadLine(), out int val))
+                            {
+                                bt.AddElement(val);
+                                Console.WriteLine("Элемент добавлен.");
+                            }
+                            break;
+                        }
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        {
+                            Console.Clear();
+                            Console.Write("Введите число для удаления: ");
+                            if (int.TryParse(Console.ReadLine(), out int val))
+                            {
+                                bt.Root = bt.Delete(bt.Root, val);
+                                Console.WriteLine("Команда удаления выполнена.");
+                            }
+                            break;
+                        }
+                    case ConsoleKey.D3:
+                    case ConsoleKey.NumPad3:
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Визуализация дерева:");
+                            bt.PrintPretty();
+                            break;
+                        }
+                    case ConsoleKey.D4:
+                    case ConsoleKey.NumPad4: 
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Обход LRK (Левый-Правый-Корень):");
+                            Console.WriteLine(bt.PrintLKP());
+                            break;
+                        }
+                    case ConsoleKey.D5:
+                    case ConsoleKey.NumPad5:
+                        {
+                            Console.Clear();
+                            Zadanie1(bt.Root);
+                            break;
+                        }
+                    case ConsoleKey.D6:
+                    case ConsoleKey.NumPad6:
+                        {
+                            Console.Clear();
+                            Zadanie2(bt.Root);
+                            Console.WriteLine("Все значения в дереве удвоены.");
+                            break;
+                        }
+
+
+                }
+            }
+            while (K.Key != ConsoleKey.Escape);
+        }
     }
 }
+
+
